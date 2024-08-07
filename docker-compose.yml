@@ -1,0 +1,6 @@
+version: '3'
+services:
+  admin-console:
+    build: .
+    ports:
+      - "5000:5000"
