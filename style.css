@@ -334,8 +334,8 @@ h1 {
   flex-wrap: wrap;
 }
 
-/* X decorativa (corre lungo il bordo interno): tenue durante il
-   caricamento, piena a ordine evaso */
+/* X decorativa (corre lungo il bordo interno): compare solo a ordine
+   evaso, insieme alla scritta del prodotto. Nascosta durante il loader. */
 .x-container {
   position: absolute;
   inset: 32px;
@@ -344,11 +344,6 @@ h1 {
   display: none;
   opacity: 0;
   transition: opacity 0.35s ease;
-}
-
-.ticket.loading .x-container {
-  display: block;
-  opacity: 0.3;
 }
 
 .ticket.redeemed .x-container {
