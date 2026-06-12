@@ -8,6 +8,7 @@
   --gradient-color2: #FDDE00;
   --gradient-color3: #FC2291;
   --color-teal: #11BF95;
+  --color-redeemed: #58D66B;
   --white: #ffffff;
   --card-radius: 16px;
   --text-dark: #1a1a1a;
@@ -88,12 +89,12 @@ h1 {
 }
 
 .card-header-container {
-  padding: 14px 16px 10px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 14px 16px 12px;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .card-header-container .title h2 {
-  color: var(--white);
+  color: #3d3d3d;
   font-size: 20px;
   font-weight: 800;
   font-style: italic;
@@ -121,13 +122,25 @@ h1 {
   color: var(--text-muted);
 }
 
-/* ── STATUS MESSAGE ──────────────────────────────── */
+/* ── STATUS MESSAGE (glass + bordo teal, solo a ordine evaso) ── */
+.order-messages {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid var(--gradient-color1);
+  border-radius: var(--card-radius);
+  padding: 14px 16px;
+  width: 100%;
+}
+
 .order-messages .message {
-  font-size: 14px;
-  color: var(--text-dark);
+  font-size: 15px;
+  color: var(--white);
   line-height: 1.5;
   font-weight: 500;
 }
+
+.hidden { display: none !important; }
 
 /* ── ORDER SUMMARY EXPLAIN ───────────────────────── */
 .order-summary-explain {
@@ -166,6 +179,8 @@ h1 {
   width: 100%;
   min-height: 110px;
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 /* Colored sides */
@@ -176,36 +191,25 @@ h1 {
   flex-shrink: 0;
 }
 
+/* Sinistra: arcobaleno animato in continuazione */
 .ticket-left {
   color: var(--gradient-color1);
 }
 
 .ticket-left.animated {
-  animation: ticketColor 3s linear infinite;
+  animation: ticketColor 4s linear infinite;
 }
 
 @keyframes ticketColor {
-  0%,   32% { color: var(--gradient-color1); }
-  33%,  65% { color: var(--gradient-color2); }
-  66%,  99% { color: var(--gradient-color3); }
-  100%      { color: var(--gradient-color1); }
+  0%   { color: var(--gradient-color1); }
+  33%  { color: var(--gradient-color2); }
+  66%  { color: var(--gradient-color3); }
+  100% { color: var(--gradient-color1); }
 }
 
-/* Right side = background color (creates notch illusion matching the card) */
+/* Destra: bianca fino al bordo, con notch scuro */
 .ticket-right {
-  color: var(--background-color);
-}
-
-.ticket-right .ticket-piece {
-  background: var(--background-color);
-}
-
-.ticket-right .ticket-svg-container {
-  background: var(--background-color);
-}
-
-.ticket-right .ticket-svg-container svg path.fill {
-  fill: var(--background-color);
+  color: var(--white);
 }
 
 .ticket-piece {
@@ -213,11 +217,13 @@ h1 {
   background: currentColor;
 }
 
+/* Il retro scuro del notch: il foro del path lascia vedere questo colore */
 .ticket-svg-container {
   width: 25px;
   height: 68px;
   flex-shrink: 0;
   display: block;
+  background: var(--background-color);
 }
 
 .ticket-svg-container svg {
@@ -228,28 +234,31 @@ h1 {
   fill: currentColor;
 }
 
-/* Mirror the right side SVG */
+/* Mirror the right side SVG (notch sul bordo esterno destro) */
 .ticket-right .ticket-svg-container {
   transform: scaleX(-1);
 }
 
-/* White content area with teal border on all sides */
+/* Area contenuto bianca */
 .ticket-content {
   flex: 1;
   background: white;
-  border: 2px solid var(--color-teal);
   position: relative;
   display: flex;
   align-items: stretch;
   cursor: pointer;
 }
 
+/* Bordo rosso/rosa arrotondato interno al ticket */
 .ticket-content-radius {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px 12px;
+  margin: 12px;
+  border: 2px solid var(--gradient-color3);
+  border-radius: 14px;
   position: relative;
   z-index: 1;
 }
@@ -302,18 +311,18 @@ h1 {
   flex-wrap: wrap;
 }
 
-/* Decorative X overlay */
+/* Decorative X overlay (corre lungo il bordo rosa) */
 .x-container {
   position: absolute;
-  inset: 0;
+  inset: 12px;
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
 }
 
-/* Redeemed: stop animation, lock to teal */
-.ticket.redeemed .ticket-left.animated {
+/* Redeemed: stop animazione, lato sinistro verde */
+.ticket.redeemed .ticket-left {
   animation: none;
-  color: var(--gradient-color1);
+  color: var(--color-redeemed);
 }
 
 /* ── BASE BUTTONS ────────────────────────────────── */
@@ -459,56 +468,6 @@ h1 {
   font-style: italic;
   color: var(--text-dark);
 }
-
-/* ── EVADED OVERLAY (dimmed backdrop + box) ──────── */
-.evaded-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
-  animation: fadeIn 0.25s ease;
-}
-
-.evaded-overlay.hidden { display: none; }
-
-.evaded-box {
-  background: linear-gradient(145deg, #16a34a, #22c55e);
-  border-radius: 24px;
-  padding: 36px 28px 28px;
-  max-width: 300px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  text-align: center;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px) scale(0.95); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.evaded-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.evaded-box h2 { color: white; font-size: 24px; font-weight: 800; }
-.evaded-box p  { color: rgba(255,255,255,0.9); font-size: 15px; line-height: 1.4; }
 
 /* ── FORM PAGE ───────────────────────────────────── */
 .form-card-glass {

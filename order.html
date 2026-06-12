@@ -16,18 +16,6 @@
   <div class="background"></div>
   <div class="background-after"></div>
 
-  <!-- Ordine evaso overlay — box modale -->
-  <div id="evadedOverlay" class="evaded-overlay hidden" onclick="chiudiEvaso()">
-    <div class="evaded-box" onclick="event.stopPropagation()">
-      <div class="evaded-icon">&#10003;</div>
-      <h2>Ordine Evaso!</h2>
-      <p>Il prodotto è stato ritirato con successo.</p>
-      <div class="base-button inverted outline" onclick="chiudiEvaso()" style="margin-top:4px;">
-        <div class="button-inner"><div class="btn-text"><p>Chiudi</p></div></div>
-      </div>
-    </div>
-  </div>
-
   <main>
     <div class="page-content">
 
@@ -39,8 +27,8 @@
         <p id="orderTime">adesso</p>
       </div>
 
-      <!-- Messaggio completato -->
-      <div class="order-messages order-white-content">
+      <!-- Messaggio completato (visibile solo a ordine evaso) -->
+      <div class="order-messages hidden" id="orderMessages">
         <div class="messages">
           <div class="message-container">
             <div class="message">Il tuo ordine è stato completato con successo.</div>
@@ -253,28 +241,26 @@
       currentPage = idx;
     }
 
+    var redeemed = false;
+
     function advanceTicket() {
-      if (currentPage === 0) showPage(1);
+      if (!redeemed && currentPage === 0) showPage(1);
     }
 
     function gotoConfirm() {
-      showPage(2);
+      if (!redeemed) showPage(2);
     }
 
     function evadi() {
+      redeemed = true;
       document.getElementById('ticket').classList.add('redeemed');
-      document.getElementById('ticket').querySelector('.ticket-left').classList.remove('animated');
       document.getElementById('xContainer').style.display = 'block';
       showPage(0);
-      document.getElementById('evadedOverlay').classList.remove('hidden');
+      document.getElementById('orderMessages').classList.remove('hidden');
     }
 
     function noEvadi() {
       showPage(0);
-    }
-
-    function chiudiEvaso() {
-      document.getElementById('evadedOverlay').classList.add('hidden');
     }
 
     /* ── Feedback stars ──────────────────────────── */
