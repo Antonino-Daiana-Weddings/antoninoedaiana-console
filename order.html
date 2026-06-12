@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BunkerF — Conferma Ordine</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- QR code library (richiede connessione internet) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+          integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSr7FORmNQqk7a12V55V/MCi1rjcBfTr5qiag=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="background-after"></div>
+
+  <!-- Overlay ordine evaso -->
+  <div id="evadedOverlay" class="evaded-overlay hidden">
+    <div class="evaded-icon">&#10003;</div>
+    <h2>Ordine Evaso!</h2>
+    <p>Il prodotto è stato ritirato con successo.</p>
+    <button class="btn btn-ghost" onclick="chiudiEvaso()">Chiudi</button>
+  </div>
+
+  <main>
+    <div class="page-content">
+
+      <!-- Logo -->
+      <div class="business-header">
+        <img
+          src="https://img.qromo.io/businesses/KReWJwtm7a2cEmi-full.png"
+          alt="BunkerF"
+          class="business-logo"
+          onerror="this.style.display='none'"
+        >
+      </div>
+
+      <!-- Titolo -->
+      <h1 class="page-title">Grazie per il tuo ordine!</h1>
+
+      <!-- Numero ordine + orario -->
+      <div class="order-header order-white-content">
+        <span class="order-number" id="orderNumber">#—</span>
+        <span class="order-time" id="orderTime">adesso</span>
+      </div>
+
+      <!-- Messaggio di successo -->
+      <div class="order-messages order-white-content">
+        <div class="status-icon">&#10003;</div>
+        <p class="status-text">Il tuo ordine è stato completato con successo.</p>
+      </div>
+
+      <!-- Card principale: nome + prodotto -->
+      <div class="main-card order-white-content card-glass">
+        <h2 id="customerName">—</h2>
+        <div class="order-summary list-container noDivider">
+          <div class="list-item">
+            <span class="item-qty"  id="itemQty">1x</span>
+            <span class="item-name" id="itemName">—</span>
+            <span class="item-price" id="itemPrice">€ —</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Istruzione ritiro -->
+      <div class="pickup-info order-white-content">
+        <span class="pickup-icon">&#127866;</span>
+        <p class="pickup-text">Vai al bancone e ritira i prodotti</p>
+      </div>
+
+      <!-- QR code -->
+      <div class="redeem-section order-white-content">
+        <h2>Riscuoti il tuo acquisto</h2>
+        <div class="qr-container">
+          <div id="qrcode"></div>
+        </div>
+        <p class="qr-instruction">
+          Mostra questo QR al personale per riscuotere il tuo ordine.
+        </p>
+        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="downloadQR()">
+          Scarica QR code
+        </button>
+      </div>
+
+      <!-- Conferma ritiro -->
+      <div class="redeem-confirm order-white-content" id="redeemConfirm">
+        <p class="redeem-confirm-text">Prodotto ritirato?</p>
+        <div class="redeem-buttons">
+          <button class="btn btn-success" onclick="evadi()">Si</button>
+          <button class="btn btn-outline" onclick="noEvadi()">No</button>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback-section order-white-content">
+        <h3>Lascia il tuo feedback</h3>
+        <div class="feedback-categories">
+          <div class="feedback-item">
+            <span class="feedback-label">Qualita</span>
+            <div class="stars-rating" data-cat="qualita"></div>
+          </div>
+          <div class="feedback-item">
+            <span class="feedback-label">Location</span>
+            <div class="stars-rating" data-cat="location"></div>
+          </div>
+          <div class="feedback-item">
+            <span class="feedback-label">Servizio</span>
+            <div class="stars-rating" data-cat="servizio"></div>
+          </div>
+          <div class="feedback-item">
+            <span class="feedback-label">Prezzo</span>
+            <div class="stars-rating" data-cat="prezzo"></div>
+          </div>
+        </div>
+        <textarea
+          class="feedback-textarea"
+          placeholder="Vuoi dirci di piu sulla tua esperienza?"
+          id="feedbackText"
+        ></textarea>
+        <button class="btn btn-primary" onclick="salvaFeedback()">Salva</button>
+      </div>
+
+      <!-- Torna al menu -->
+      <a href="index.html" class="back-link">&#8592; Torna al menu</a>
+
+    </div>
+  </main>
+
+  <div id="notification" class="notification"></div>
+
+  <script>
+    /* ── Leggi parametri URL ─────────────────────── */
+    const params   = new URLSearchParams(window.location.search);
+    const name     = params.get('name')     || 'Cliente';
+    const product  = params.get('product')  || 'Prodotto';
+    const qty      = params.get('qty')      || '1';
+    const price    = params.get('price')    || '0.00';
+    const orderNum = params.get('orderNum') || '—';
+
+    document.getElementById('customerName').textContent = name;
+    document.getElementById('orderNumber').textContent  = '#' + orderNum;
+    document.getElementById('itemQty').textContent      = qty + 'x';
+    document.getElementById('itemName').textContent     = product;
+    document.getElementById('itemPrice').textContent    = '€ ' + parseFloat(price).toFixed(2);
+
+    // Orario ordine
+    const now = new Date();
+    document.getElementById('orderTime').textContent =
+      now.getHours().toString().padStart(2,'0') + ':' +
+      now.getMinutes().toString().padStart(2,'0');
+
+    /* ── QR Code ─────────────────────────────────── */
+    const qrText = [
+      'BunkerF',
+      'Ordine #' + orderNum,
+      name,
+      qty + 'x ' + product,
+      'EUR ' + parseFloat(price).toFixed(2)
+    ].join(' | ');
+
+    if (typeof QRCode !== 'undefined') {
+      new QRCode(document.getElementById('qrcode'), {
+        text: qrText,
+        width: 180,
+        height: 180,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } else {
+      document.getElementById('qrcode').innerHTML =
+        '<p style="color:#999;font-size:12px;text-align:center;padding:16px 8px;line-height:1.5;">QR non disponibile<br>offline</p>';
+    }
+
+    /* ── Download QR ─────────────────────────────── */
+    function downloadQR() {
+      const canvas = document.querySelector('#qrcode canvas');
+      if (!canvas) { showNotif('QR non disponibile'); return; }
+      const link = document.createElement('a');
+      link.download = 'ordine-' + orderNum + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showNotif('QR scaricato!', 'success-bg');
+    }
+
+    /* ── Evadi / Non evadi ───────────────────────── */
+    function evadi() {
+      document.getElementById('evadedOverlay').classList.remove('hidden');
+      // Aggiorna il blocco conferma per mostrare stato evaso
+      const confirm = document.getElementById('redeemConfirm');
+      confirm.innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;">' +
+          '<div class="status-icon" style="background:#22c55e;">&#10003;</div>' +
+          '<p class="status-text" style="font-weight:600;">Ordine evaso con successo.</p>' +
+        '</div>';
+    }
+
+    function noEvadi() {
+      const confirm = document.getElementById('redeemConfirm');
+      confirm.style.opacity = '0.45';
+      setTimeout(() => { confirm.style.opacity = '1'; }, 500);
+    }
+
+    function chiudiEvaso() {
+      document.getElementById('evadedOverlay').classList.add('hidden');
+    }
+
+    /* ── Stelle rating ───────────────────────────── */
+    document.querySelectorAll('.stars-rating').forEach(function(container) {
+      for (var i = 1; i <= 5; i++) {
+        (function(val) {
+          var star = document.createElement('span');
+          star.className = 'star';
+          star.textContent = '★'; // ★
+          star.dataset.value = val;
+          star.addEventListener('click', function() { setRating(container, val); });
+          star.addEventListener('mouseenter', function() { hoverStars(container, val); });
+          container.appendChild(star);
+        })(i);
+      }
+      container.addEventListener('mouseleave', function() { restoreStars(container); });
+    });
+
+    function setRating(container, value) {
+      container.dataset.rating = value;
+      paintStars(container, value);
+    }
+
+    function hoverStars(container, value) {
+      paintStars(container, value);
+    }
+
+    function restoreStars(container) {
+      paintStars(container, parseInt(container.dataset.rating) || 0);
+    }
+
+    function paintStars(container, value) {
+      container.querySelectorAll('.star').forEach(function(s, i) {
+        s.style.color = i < value ? '#FFD700' : '#ddd';
+      });
+    }
+
+    /* ── Salva feedback ──────────────────────────── */
+    function salvaFeedback() {
+      showNotif('Feedback salvato! Grazie.', 'success-bg');
+    }
+
+    /* ── Notifica ────────────────────────────────── */
+    function showNotif(msg, type) {
+      var n = document.getElementById('notification');
+      n.textContent = msg;
+      n.className = 'notification show' + (type ? ' ' + type : '');
+      setTimeout(function() { n.className = 'notification'; }, 2500);
+    }
+  </script>
+</body>
+</html>
