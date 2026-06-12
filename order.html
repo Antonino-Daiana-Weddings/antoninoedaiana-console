@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!-- Card principale: nome + ticket -->
+      <!-- Card principale: nome + ticket + Torna al menù -->
       <div class="main-card order-white-content card-glass">
         <div class="card-header-container">
           <div class="title">
@@ -122,7 +122,7 @@
                     </div>
                   </div>
 
-                  <!-- Lato destro con notch (specchiato) -->
+                  <!-- Lato destro con notch (usa colore background per illusione ritaglio) -->
                   <div class="ticket-side ticket-right">
                     <div class="ticket-piece piece-right-top"></div>
                     <div class="ticket-svg-container">
@@ -139,14 +139,15 @@
 
             </div><!-- /list-item -->
           </div><!-- /list-container -->
+
+          <!-- Torna al menù — dentro la card principale -->
+          <div class="base-button inverted outline order-button mt-20 mb-20"
+               onclick="window.location.href='index.html'">
+            <div class="button-inner"><div class="btn-text"><p>Torna al menù</p></div></div>
+          </div>
+
         </div><!-- /card-body-container -->
       </div><!-- /main-card -->
-
-      <!-- Torna al menù -->
-      <div class="base-button inverted outline order-button mt-20 mb-20"
-           onclick="window.location.href='index.html'">
-        <div class="button-inner"><div class="btn-text"><p>Torna al menù</p></div></div>
-      </div>
 
       <!-- Riscuoti il tuo acquisto (QR) -->
       <div class="main-card order-white-content card-glass">
@@ -155,16 +156,15 @@
         </div>
         <div class="card-body-container">
           <div class="qr-container">
-            <p class="color-white" style="font-size:14px;text-align:center;line-height:1.5;font-weight:500;">
+            <p class="mt-10 color-white">
               Mostra questo QR al personale per riscuotere il tuo ordine.
             </p>
-            <div class="qr-box">
-              <div id="qrcode"></div>
-            </div>
-            <div class="base-button inverted outline" onclick="downloadQR()"
-                 style="max-width:240px;margin:0 auto;">
-              <div class="button-inner"><div class="btn-text"><p>Scarica QR code</p></div></div>
-            </div>
+            <div class="qrcode mt-20" id="qrcode"></div>
+            <a id="qr-download-link" href="#" download="">
+              <div class="base-button inverted outline mt-20" onclick="downloadQR(event)">
+                <div class="button-inner"><div class="btn-text"><p>Scarica QR code</p></div></div>
+              </div>
+            </a>
             <p class="mt-20 mb-10 qr-warning">
               Puoi sempre tornare a questo ordine dall'email che ti abbiamo inviato.
             </p>
@@ -172,20 +172,20 @@
         </div>
       </div>
 
-      <!-- Feedback -->
-      <div class="main-card order-white-content card-glass order-feedbacks">
-        <div class="rounded row card-header-container feedbacks-container">
-          <div class="title"><h2>Lascia il tuo feedback</h2></div>
-          <div class="stars-rating-simple" id="feedbackStars"></div>
+      <!-- Feedback — card bianca -->
+      <div class="main-card order-white-content">
+        <div class="order-feedbacks">
+          <div class="feedbacks-row">
+            <div class="title-dark"><h2>Lascia il tuo feedback</h2></div>
+            <div class="stars-container" id="feedbackStars"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Ricevuta pagamento -->
-      <div class="order-white-content">
-        <div class="ade-container">
-          <div class="ade-title">
-            <div class="ade-text"><p>Ricevuta pagamento</p></div>
-          </div>
+      <!-- Ricevuta pagamento — card bianca -->
+      <div class="main-card order-white-content">
+        <div class="receipt-row">
+          <div class="ade-text"><p>Ricevuta pagamento</p></div>
           <div class="base-button outline"
                onclick="showNotif('Ricevuta non disponibile in questa versione')">
             <div class="button-inner"><div class="btn-text"><p>Ricevuta</p></div></div>
@@ -234,13 +234,13 @@
     }
 
     /* ── Download QR ─────────────────────────────── */
-    function downloadQR() {
+    function downloadQR(e) {
+      e.preventDefault();
       var canvas = document.querySelector('#qrcode canvas');
       if (!canvas) { showNotif('QR non disponibile'); return; }
-      var a = document.createElement('a');
-      a.download = 'ordine-' + orderNum + '.png';
-      a.href = canvas.toDataURL('image/png');
-      a.click();
+      var link = document.getElementById('qr-download-link');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'ordine-' + orderNum + '.png';
       showNotif('QR scaricato!', 'success-bg');
     }
 
@@ -286,7 +286,7 @@
       (function(val) {
         var s = document.createElement('span');
         s.className = 'star';
-        s.textContent = '★';
+        s.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21L16.54 14.35L22 8.24L15.45 7.66L12 2L8.55 7.65L2 8.24L7.45 14.34L5.82 21L12 17.27Z" fill="currentColor"/></svg>';
         s.addEventListener('click', function() { rating = val; paintStars(val); });
         s.addEventListener('mouseenter', function() { paintStars(val); });
         starsEl.appendChild(s);
@@ -296,9 +296,10 @@
 
     function paintStars(val) {
       Array.from(starsEl.querySelectorAll('.star')).forEach(function(s, i) {
-        s.style.color = i < val ? '#FFD700' : '';
+        s.style.color = i < val ? '#FFD700' : 'rgba(0,0,0,0.2)';
       });
     }
+    paintStars(0);
 
     /* ── Notifica ────────────────────────────────── */
     function showNotif(msg, type) {

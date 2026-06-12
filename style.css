@@ -78,7 +78,7 @@ h1 {
 }
 
 /* ── GLASS CARDS (blue) ──────────────────────────── */
-.main-card.order-white-content.card-glass {
+.main-card.card-glass {
   background: rgba(255, 255, 255, 0.13);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -140,6 +140,20 @@ h1 {
 .mb-10 { margin-bottom: 10px; }
 .mb-20 { margin-bottom: 20px; }
 
+/* ── LIST CONTAINER ──────────────────────────────── */
+.list-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.list-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── TICKET COMPONENT ────────────────────────────── */
 .ticket-container {
   width: 100%;
@@ -176,7 +190,7 @@ h1 {
   100%      { color: var(--gradient-color1); }
 }
 
-/* Right side = background color (creates the notch illusion) */
+/* Right side = background color (creates notch illusion) */
 .ticket-right {
   color: var(--background-color);
 }
@@ -319,7 +333,7 @@ h1 {
   justify-content: center;
 }
 
-/* Inverted + outline: transparent with teal border (e.g., "Torna al menù") */
+/* Inverted + outline: transparent with teal border */
 .base-button.inverted.outline {
   background: transparent;
   border: 1.5px solid var(--gradient-color1);
@@ -334,12 +348,6 @@ h1 {
   color: var(--background-color);
   padding: 8px 18px;
   font-size: 14px;
-}
-
-/* In glass cards the outline button should use white */
-.card-glass .base-button.inverted.outline {
-  border-color: var(--gradient-color1);
-  color: var(--gradient-color1);
 }
 
 .base-button.button-negative {
@@ -366,15 +374,23 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   width: 100%;
 }
 
-.qr-box {
+.qrcode {
   background: white;
   padding: 12px;
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  line-height: 0;
+}
+
+.qrcode img,
+.qrcode canvas {
+  display: block;
+  width: 180px !important;
+  height: 180px !important;
 }
 
 .qr-warning {
@@ -387,8 +403,8 @@ h1 {
 
 .color-white { color: var(--white); }
 
-/* ── FEEDBACK ────────────────────────────────────── */
-.feedbacks-container {
+/* ── FEEDBACK (white card) ───────────────────────── */
+.feedbacks-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -396,21 +412,30 @@ h1 {
   gap: 8px;
 }
 
-.stars-rating-simple {
+.title-dark h2 {
+  font-size: 16px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text-dark);
+}
+
+.stars-container {
   display: flex;
   gap: 4px;
 }
 
 .star {
   font-size: 24px;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: color 0.15s;
   user-select: none;
+  display: flex;
+  align-items: center;
 }
 
-/* ── RECEIPT CARD ────────────────────────────────── */
-.ade-container {
+/* ── RECEIPT (white card) ────────────────────────── */
+.receipt-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
