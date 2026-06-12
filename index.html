@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BunkerF — Nuovo Ordine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,25 +16,16 @@
   <main>
     <div class="page-content">
 
-      <div class="business-header">
-        <img
-          src="https://img.qromo.io/businesses/KReWJwtm7a2cEmi-full.png"
-          alt="BunkerF"
-          class="business-logo"
-          onerror="this.style.display='none'"
-        >
-      </div>
+      <h1>Crea Ordine</h1>
 
-      <h1 class="page-title">Crea Ordine</h1>
-
-      <div class="order-white-content form-card-anim" style="padding: 24px;">
+      <div class="form-card-glass">
         <div class="form-group">
           <label for="name">Nome Cliente</label>
-          <input type="text" id="name" placeholder="Es. Marco" autocomplete="off">
+          <input type="text" id="name" placeholder="Es. Alessio" autocomplete="off">
         </div>
         <div class="form-group">
           <label for="product">Prodotto</label>
-          <input type="text" id="product" placeholder="Es. Atomico" autocomplete="off">
+          <input type="text" id="product" placeholder="Es. Leone Nero" autocomplete="off">
         </div>
         <div class="form-group">
           <label for="qty">Quantità</label>
@@ -45,15 +39,11 @@
           <label for="order_num">Numero Ordine</label>
           <input type="number" id="order_num" min="1">
         </div>
-
-        <button class="btn btn-primary" onclick="creaOrdine()">
-          Crea Ordine
-        </button>
+        <button class="btn-form" onclick="creaOrdine()">Crea Ordine</button>
       </div>
 
-      <a href="#" class="back-link" id="last-order-link" style="display:none; opacity:0.7; font-size:13px;">
-        Rivedi ultimo ordine
-      </a>
+      <a href="#" class="base-button inverted outline" id="last-order-link"
+         style="display:none;font-size:13px;opacity:0.75;"></a>
 
     </div>
   </main>
@@ -61,49 +51,40 @@
   <div id="notification" class="notification"></div>
 
   <script>
-    // Auto-genera numero ordine progressivo
-    const saved = JSON.parse(localStorage.getItem('lastOrder') || 'null');
-    const autoNum = saved ? (parseInt(saved.orderNum) + 1) : (Math.floor(Math.random() * 900) + 100);
+    var saved = JSON.parse(localStorage.getItem('lastOrder') || 'null');
+    var autoNum = saved ? (parseInt(saved.orderNum) + 1) : (Math.floor(Math.random()*900)+100);
     document.getElementById('order_num').value = autoNum;
 
-    // Ripristina ultimi valori (escluso numero ordine già auto-incrementato)
     if (saved) {
       document.getElementById('name').value    = saved.name    || '';
       document.getElementById('product').value = saved.product || '';
       document.getElementById('qty').value     = saved.qty     || 1;
       document.getElementById('price').value   = saved.price   || '8.00';
-
-      const lastLink = document.getElementById('last-order-link');
+      var lastLink = document.getElementById('last-order-link');
       lastLink.href = 'order.html?' + new URLSearchParams(saved).toString();
-      lastLink.textContent = 'Rivedi ultimo ordine (#' + saved.orderNum + ')';
-      lastLink.style.display = 'block';
+      lastLink.textContent = 'Rivedi ordine #' + saved.orderNum;
+      lastLink.style.display = 'flex';
     }
 
     function showNotif(msg) {
-      const n = document.getElementById('notification');
+      var n = document.getElementById('notification');
       n.textContent = msg;
       n.className = 'notification show';
-      setTimeout(() => { n.className = 'notification'; }, 2200);
+      setTimeout(function() { n.className = 'notification'; }, 2200);
     }
 
     function creaOrdine() {
-      const name     = document.getElementById('name').value.trim();
-      const product  = document.getElementById('product').value.trim();
-      const qty      = parseInt(document.getElementById('qty').value)    || 1;
-      const price    = parseFloat(document.getElementById('price').value) || 0;
-      const orderNum = parseInt(document.getElementById('order_num').value) || autoNum;
+      var name     = document.getElementById('name').value.trim();
+      var product  = document.getElementById('product').value.trim();
+      var qty      = parseInt(document.getElementById('qty').value)     || 1;
+      var price    = parseFloat(document.getElementById('price').value) || 0;
+      var orderNum = parseInt(document.getElementById('order_num').value) || autoNum;
 
       if (!name)    { showNotif('Inserisci il nome del cliente'); return; }
       if (!product) { showNotif('Inserisci il prodotto');         return; }
 
-      const data = {
-        name,
-        product,
-        qty,
-        price: price.toFixed(2),
-        orderNum
-      };
-
+      var data = { name: name, product: product, qty: qty,
+                   price: price.toFixed(2), orderNum: orderNum };
       localStorage.setItem('lastOrder', JSON.stringify(data));
       window.location.href = 'order.html?' + new URLSearchParams(data).toString();
     }

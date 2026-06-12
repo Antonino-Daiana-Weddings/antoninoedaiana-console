@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BunkerF — Conferma Ordine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <!-- QR code library (richiede connessione internet) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
           integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSr7FORmNQqk7a12V55V/MCi1rjcBfTr5qiag=="
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -14,114 +16,149 @@
   <div class="background"></div>
   <div class="background-after"></div>
 
-  <!-- Overlay ordine evaso -->
   <div id="evadedOverlay" class="evaded-overlay hidden">
     <div class="evaded-icon">&#10003;</div>
     <h2>Ordine Evaso!</h2>
     <p>Il prodotto è stato ritirato con successo.</p>
-    <button class="btn btn-ghost" onclick="chiudiEvaso()">Chiudi</button>
+    <div class="base-button inverted outline" onclick="chiudiEvaso()" style="margin-top:8px;max-width:200px;">
+      <div class="button-inner"><div class="btn-text"><p>Chiudi</p></div></div>
+    </div>
   </div>
 
   <main>
     <div class="page-content">
 
-      <!-- Logo -->
-      <div class="business-header">
-        <img
-          src="https://img.qromo.io/businesses/KReWJwtm7a2cEmi-full.png"
-          alt="BunkerF"
-          class="business-logo"
-          onerror="this.style.display='none'"
-        >
-      </div>
+      <h1>Grazie per il tuo ordine!</h1>
 
-      <!-- Titolo -->
-      <h1 class="page-title">Grazie per il tuo ordine!</h1>
-
-      <!-- Numero ordine + orario -->
       <div class="order-header order-white-content">
-        <span class="order-number" id="orderNumber">#—</span>
-        <span class="order-time" id="orderTime">adesso</span>
+        <p class="bold" id="orderNumber">#—</p>
+        <p id="orderTime">adesso</p>
       </div>
 
-      <!-- Messaggio di successo -->
       <div class="order-messages order-white-content">
-        <div class="status-icon">&#10003;</div>
-        <p class="status-text">Il tuo ordine è stato completato con successo.</p>
+        <div class="messages"><div class="message-container">
+          <div class="message">Il tuo ordine è stato completato con successo.</div>
+        </div></div>
       </div>
 
-      <!-- Card principale: nome + prodotto -->
       <div class="main-card order-white-content card-glass">
-        <h2 id="customerName">—</h2>
-        <div class="order-summary list-container noDivider">
-          <div class="list-item">
-            <span class="item-qty"  id="itemQty">1x</span>
-            <span class="item-name" id="itemName">—</span>
-            <span class="item-price" id="itemPrice">€ —</span>
+        <div class="card-header-container">
+          <div class="title"><h2 id="customerName">—</h2></div>
+        </div>
+        <div class="card-body-container">
+          <p class="order-summary-explain order-summary-explain-ticket mt-10">
+            Vai al bancone e ritira i prodotti
+          </p>
+          <div class="list-container order-summary noDivider">
+            <div class="list-item" style="--list-item-background-color: transparent;">
+              <div class="ticket-container">
+                <div class="ticket" id="ticket"
+                     style="--gradient-color1:#2CECBE;--gradient-color2:#FDDE00;--gradient-color3:#FC2291;">
+
+                  <div class="ticket-side ticket-left animated">
+                    <div class="ticket-piece piece-left-top"></div>
+                    <div class="ticket-svg-container">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 25 68">
+                        <path d="M25,104H0V87a16.89,16.89,0,0,0,12.021-4.979,17,17,0,0,0,0-24.042A16.889,16.889,0,0,0,0,53V36H25Z"
+                              transform="translate(0 -36)" class="fill"></path>
+                      </svg>
+                    </div>
+                    <div class="ticket-piece piece-left-bottom"></div>
+                  </div>
+
+                  <div class="ticket-content" onclick="advanceTicket()">
+                    <div class="ticket-content-radius">
+                      <div class="ticket-page page-item visible" id="page-item">
+                        <p id="ticketProduct">1x —</p>
+                      </div>
+                      <div class="ticket-page page-go-staff" id="page-go-staff">
+                        <p class="go-staff-p" onclick="event.stopPropagation(); gotoConfirm()">Vai al bancone</p>
+                        <p class="product-p" id="ticketProduct2">1x —</p>
+                      </div>
+                      <div class="ticket-page page-confirm" id="page-confirm">
+                        <p>Prodotto ritirato?</p>
+                        <div class="button-container">
+                          <div class="base-button button-negative" onclick="event.stopPropagation(); noEvadi()">
+                            <div class="button-inner"><div class="btn-text"><p>No</p></div></div>
+                          </div>
+                          <div class="base-button outline button-positive" onclick="event.stopPropagation(); evadi()">
+                            <div class="button-inner"><div class="btn-text"><p>Sì</p></div></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="x-container" id="xContainer" style="display:none;">
+                      <svg preserveAspectRatio="none" viewBox="0 0 200 100"
+                           xmlns="http://www.w3.org/2000/svg" xml:space="preserve"
+                           style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;width:100%;height:100%;">
+                        <path d="M1.556,1.559L198.414,98.388" style="fill:none;stroke:rgb(252,34,145);stroke-width:3px;vector-effect:non-scaling-stroke;"></path>
+                        <g transform="matrix(-1,0,0,1,199.97,0)">
+                          <path d="M1.556,1.559L198.414,98.388" style="fill:none;stroke:rgb(252,34,145);stroke-width:3px;vector-effect:non-scaling-stroke;"></path>
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="ticket-side ticket-right">
+                    <div class="ticket-piece piece-right-top"></div>
+                    <div class="ticket-svg-container">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 25 68">
+                        <path d="M25,104H0V87a16.89,16.89,0,0,0,12.021-4.979,17,17,0,0,0,0-24.042A16.889,16.889,0,0,0,0,53V36H25Z"
+                              transform="translate(0 -36)" class="fill"></path>
+                      </svg>
+                    </div>
+                    <div class="ticket-piece piece-right-bottom"></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Istruzione ritiro -->
-      <div class="pickup-info order-white-content">
-        <span class="pickup-icon">&#127866;</span>
-        <p class="pickup-text">Vai al bancone e ritira i prodotti</p>
+      <div class="base-button inverted outline order-button mt-20 mb-20"
+           onclick="window.location.href='index.html'">
+        <div class="button-inner"><div class="btn-text"><p>Torna al menù</p></div></div>
       </div>
 
-      <!-- QR code -->
-      <div class="redeem-section order-white-content">
-        <h2>Riscuoti il tuo acquisto</h2>
-        <div class="qr-container">
-          <div id="qrcode"></div>
+      <div class="main-card order-white-content card-glass">
+        <div class="card-header-container">
+          <div class="title"><h2>Riscuoti il tuo acquisto</h2></div>
         </div>
-        <p class="qr-instruction">
-          Mostra questo QR al personale per riscuotere il tuo ordine.
-        </p>
-        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="downloadQR()">
-          Scarica QR code
-        </button>
-      </div>
-
-      <!-- Conferma ritiro -->
-      <div class="redeem-confirm order-white-content" id="redeemConfirm">
-        <p class="redeem-confirm-text">Prodotto ritirato?</p>
-        <div class="redeem-buttons">
-          <button class="btn btn-success" onclick="evadi()">Si</button>
-          <button class="btn btn-outline" onclick="noEvadi()">No</button>
+        <div class="card-body-container">
+          <div class="qr-container">
+            <p class="color-white" style="font-size:14px;text-align:center;line-height:1.5;font-weight:500;">
+              Mostra questo QR al personale per riscuotere il tuo ordine.
+            </p>
+            <div class="qr-box"><div id="qrcode"></div></div>
+            <div class="base-button inverted outline" onclick="downloadQR()"
+                 style="max-width:240px;margin:0 auto;">
+              <div class="button-inner"><div class="btn-text"><p>Scarica QR code</p></div></div>
+            </div>
+            <p class="mt-20 mb-10 qr-warning">
+              Puoi sempre tornare a questo ordine dall'email che ti abbiamo inviato.
+            </p>
+          </div>
         </div>
       </div>
 
-      <!-- Feedback -->
-      <div class="feedback-section order-white-content">
-        <h3>Lascia il tuo feedback</h3>
-        <div class="feedback-categories">
-          <div class="feedback-item">
-            <span class="feedback-label">Qualita</span>
-            <div class="stars-rating" data-cat="qualita"></div>
-          </div>
-          <div class="feedback-item">
-            <span class="feedback-label">Location</span>
-            <div class="stars-rating" data-cat="location"></div>
-          </div>
-          <div class="feedback-item">
-            <span class="feedback-label">Servizio</span>
-            <div class="stars-rating" data-cat="servizio"></div>
-          </div>
-          <div class="feedback-item">
-            <span class="feedback-label">Prezzo</span>
-            <div class="stars-rating" data-cat="prezzo"></div>
-          </div>
+      <div class="main-card order-white-content card-glass order-feedbacks">
+        <div class="rounded row card-header-container feedbacks-container">
+          <div class="title"><h2>Lascia il tuo feedback</h2></div>
+          <div class="stars-rating-simple" id="feedbackStars"></div>
         </div>
-        <textarea
-          class="feedback-textarea"
-          placeholder="Vuoi dirci di piu sulla tua esperienza?"
-          id="feedbackText"
-        ></textarea>
-        <button class="btn btn-primary" onclick="salvaFeedback()">Salva</button>
       </div>
 
-      <!-- Torna al menu -->
-      <a href="index.html" class="back-link">&#8592; Torna al menu</a>
+      <div class="order-white-content">
+        <div class="ade-container">
+          <div class="ade-title"><div class="ade-text"><p>Ricevuta pagamento</p></div></div>
+          <div class="base-button outline"
+               onclick="showNotif('Ricevuta non disponibile in questa versione')">
+            <div class="button-inner"><div class="btn-text"><p>Ricevuta</p></div></div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </main>
@@ -129,123 +166,88 @@
   <div id="notification" class="notification"></div>
 
   <script>
-    /* ── Leggi parametri URL ─────────────────────── */
-    const params   = new URLSearchParams(window.location.search);
-    const name     = params.get('name')     || 'Cliente';
-    const product  = params.get('product')  || 'Prodotto';
-    const qty      = params.get('qty')      || '1';
-    const price    = params.get('price')    || '0.00';
-    const orderNum = params.get('orderNum') || '—';
+    var p        = new URLSearchParams(window.location.search);
+    var name     = p.get('name')     || 'Cliente';
+    var product  = p.get('product')  || 'Prodotto';
+    var qty      = p.get('qty')      || '1';
+    var price    = p.get('price')    || '0.00';
+    var orderNum = p.get('orderNum') || String(Math.floor(Math.random()*900)+100);
 
-    document.getElementById('customerName').textContent = name;
-    document.getElementById('orderNumber').textContent  = '#' + orderNum;
-    document.getElementById('itemQty').textContent      = qty + 'x';
-    document.getElementById('itemName').textContent     = product;
-    document.getElementById('itemPrice').textContent    = '€ ' + parseFloat(price).toFixed(2);
+    document.getElementById('customerName').textContent   = name;
+    document.getElementById('orderNumber').textContent    = '#' + orderNum;
+    document.getElementById('ticketProduct').textContent  = qty + 'x ' + product;
+    document.getElementById('ticketProduct2').textContent = qty + 'x ' + product;
 
-    // Orario ordine
-    const now = new Date();
+    var now = new Date();
     document.getElementById('orderTime').textContent =
       now.getHours().toString().padStart(2,'0') + ':' +
       now.getMinutes().toString().padStart(2,'0');
 
-    /* ── QR Code ─────────────────────────────────── */
-    const qrText = [
-      'BunkerF',
-      'Ordine #' + orderNum,
-      name,
-      qty + 'x ' + product,
-      'EUR ' + parseFloat(price).toFixed(2)
-    ].join(' | ');
-
+    var qrText = 'BunkerF | #' + orderNum + ' | ' + name + ' | ' + qty + 'x ' + product;
     if (typeof QRCode !== 'undefined') {
       new QRCode(document.getElementById('qrcode'), {
-        text: qrText,
-        width: 180,
-        height: 180,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
+        text: qrText, width: 180, height: 180,
+        colorDark: '#000000', colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
     } else {
       document.getElementById('qrcode').innerHTML =
-        '<p style="color:#999;font-size:12px;text-align:center;padding:16px 8px;line-height:1.5;">QR non disponibile<br>offline</p>';
+        '<p style="color:#999;font-size:12px;padding:20px;text-align:center;">QR offline</p>';
     }
 
-    /* ── Download QR ─────────────────────────────── */
     function downloadQR() {
-      const canvas = document.querySelector('#qrcode canvas');
+      var canvas = document.querySelector('#qrcode canvas');
       if (!canvas) { showNotif('QR non disponibile'); return; }
-      const link = document.createElement('a');
-      link.download = 'ordine-' + orderNum + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      var a = document.createElement('a');
+      a.download = 'ordine-' + orderNum + '.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
       showNotif('QR scaricato!', 'success-bg');
     }
 
-    /* ── Evadi / Non evadi ───────────────────────── */
+    var currentPage = 0;
+    var pageIds = ['page-item', 'page-go-staff', 'page-confirm'];
+
+    function showPage(idx) {
+      pageIds.forEach(function(id, i) {
+        document.getElementById(id).classList.toggle('visible', i === idx);
+      });
+      currentPage = idx;
+    }
+
+    function advanceTicket() { if (currentPage === 0) showPage(1); }
+    function gotoConfirm()   { showPage(2); }
+
     function evadi() {
+      document.getElementById('ticket').classList.add('redeemed');
+      document.getElementById('ticket').querySelector('.ticket-left').classList.remove('animated');
+      document.getElementById('xContainer').style.display = 'block';
+      showPage(0);
       document.getElementById('evadedOverlay').classList.remove('hidden');
-      // Aggiorna il blocco conferma per mostrare stato evaso
-      const confirm = document.getElementById('redeemConfirm');
-      confirm.innerHTML =
-        '<div style="display:flex;align-items:center;gap:12px;">' +
-          '<div class="status-icon" style="background:#22c55e;">&#10003;</div>' +
-          '<p class="status-text" style="font-weight:600;">Ordine evaso con successo.</p>' +
-        '</div>';
     }
 
-    function noEvadi() {
-      const confirm = document.getElementById('redeemConfirm');
-      confirm.style.opacity = '0.45';
-      setTimeout(() => { confirm.style.opacity = '1'; }, 500);
+    function noEvadi()   { showPage(0); }
+    function chiudiEvaso() { document.getElementById('evadedOverlay').classList.add('hidden'); }
+
+    var starsEl = document.getElementById('feedbackStars');
+    var rating = 0;
+    for (var i = 1; i <= 5; i++) {
+      (function(val) {
+        var s = document.createElement('span');
+        s.className = 'star'; s.textContent = '★';
+        s.addEventListener('click', function() { rating = val; paintStars(val); });
+        s.addEventListener('mouseenter', function() { paintStars(val); });
+        starsEl.appendChild(s);
+      })(i);
     }
+    starsEl.addEventListener('mouseleave', function() { paintStars(rating); });
 
-    function chiudiEvaso() {
-      document.getElementById('evadedOverlay').classList.add('hidden');
-    }
-
-    /* ── Stelle rating ───────────────────────────── */
-    document.querySelectorAll('.stars-rating').forEach(function(container) {
-      for (var i = 1; i <= 5; i++) {
-        (function(val) {
-          var star = document.createElement('span');
-          star.className = 'star';
-          star.textContent = '★'; // ★
-          star.dataset.value = val;
-          star.addEventListener('click', function() { setRating(container, val); });
-          star.addEventListener('mouseenter', function() { hoverStars(container, val); });
-          container.appendChild(star);
-        })(i);
-      }
-      container.addEventListener('mouseleave', function() { restoreStars(container); });
-    });
-
-    function setRating(container, value) {
-      container.dataset.rating = value;
-      paintStars(container, value);
-    }
-
-    function hoverStars(container, value) {
-      paintStars(container, value);
-    }
-
-    function restoreStars(container) {
-      paintStars(container, parseInt(container.dataset.rating) || 0);
-    }
-
-    function paintStars(container, value) {
-      container.querySelectorAll('.star').forEach(function(s, i) {
-        s.style.color = i < value ? '#FFD700' : '#ddd';
+    function paintStars(val) {
+      Array.from(starsEl.querySelectorAll('.star')).forEach(function(s, i) {
+        s.style.color = i < val ? '#FFD700' : '';
       });
     }
 
-    /* ── Salva feedback ──────────────────────────── */
-    function salvaFeedback() {
-      showNotif('Feedback salvato! Grazie.', 'success-bg');
-    }
-
-    /* ── Notifica ────────────────────────────────── */
     function showNotif(msg, type) {
       var n = document.getElementById('notification');
       n.textContent = msg;
