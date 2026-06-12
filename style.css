@@ -338,7 +338,7 @@ h1 {
    caricamento, piena a ordine evaso */
 .x-container {
   position: absolute;
-  inset: 10px;
+  inset: 32px;
   pointer-events: none;
   z-index: 2;
   display: none;
