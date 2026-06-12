@@ -16,13 +16,15 @@
   <div class="background"></div>
   <div class="background-after"></div>
 
-  <!-- Ordine evaso overlay -->
-  <div id="evadedOverlay" class="evaded-overlay hidden">
-    <div class="evaded-icon">&#10003;</div>
-    <h2>Ordine Evaso!</h2>
-    <p>Il prodotto è stato ritirato con successo.</p>
-    <div class="base-button inverted outline" onclick="chiudiEvaso()" style="margin-top:8px;max-width:200px;">
-      <div class="button-inner"><div class="btn-text"><p>Chiudi</p></div></div>
+  <!-- Ordine evaso overlay — box modale -->
+  <div id="evadedOverlay" class="evaded-overlay hidden" onclick="chiudiEvaso()">
+    <div class="evaded-box" onclick="event.stopPropagation()">
+      <div class="evaded-icon">&#10003;</div>
+      <h2>Ordine Evaso!</h2>
+      <p>Il prodotto è stato ritirato con successo.</p>
+      <div class="base-button inverted outline" onclick="chiudiEvaso()" style="margin-top:4px;">
+        <div class="button-inner"><div class="btn-text"><p>Chiudi</p></div></div>
+      </div>
     </div>
   </div>
 
@@ -212,10 +214,7 @@
     document.getElementById('ticketProduct').textContent  = qty + 'x ' + product;
     document.getElementById('ticketProduct2').textContent = qty + 'x ' + product;
 
-    var now = new Date();
-    document.getElementById('orderTime').textContent =
-      now.getHours().toString().padStart(2,'0') + ':' +
-      now.getMinutes().toString().padStart(2,'0');
+    document.getElementById('orderTime').textContent = '12 min fa';
 
     /* ── QR Code ─────────────────────────────────── */
     var qrText = 'BunkerF | #' + orderNum + ' | ' + name + ' | ' + qty + 'x ' + product;
@@ -229,8 +228,7 @@
         correctLevel: QRCode.CorrectLevel.M
       });
     } else {
-      document.getElementById('qrcode').innerHTML =
-        '<p style="color:#999;font-size:12px;padding:20px;text-align:center;">QR offline</p>';
+      generateFakeQR(document.getElementById('qrcode'));
     }
 
     /* ── Download QR ─────────────────────────────── */
@@ -300,6 +298,28 @@
       });
     }
     paintStars(0);
+
+    /* ── Fake QR fallback ────────────────────────── */
+    function generateFakeQR(el) {
+      var s = 180, cs = Math.floor(s / 21);
+      var svg = '<svg width="' + s + '" height="' + s + '" xmlns="http://www.w3.org/2000/svg">';
+      svg += '<rect width="' + s + '" height="' + s + '" fill="white"/>';
+      function finder(ox, oy) {
+        svg += '<rect x="' + (ox*cs) + '" y="' + (oy*cs) + '" width="' + (7*cs) + '" height="' + (7*cs) + '" fill="#000"/>';
+        svg += '<rect x="' + ((ox+1)*cs) + '" y="' + ((oy+1)*cs) + '" width="' + (5*cs) + '" height="' + (5*cs) + '" fill="#fff"/>';
+        svg += '<rect x="' + ((ox+2)*cs) + '" y="' + ((oy+2)*cs) + '" width="' + (3*cs) + '" height="' + (3*cs) + '" fill="#000"/>';
+      }
+      finder(0,0); finder(14,0); finder(0,14);
+      var seed = orderNum.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
+      function rnd(i){ seed=(seed*1103515245+12345)&0x7fffffff; return (seed>>16)&1; }
+      for (var r=0;r<21;r++) for (var c=0;c<21;c++) {
+        var inFinder = (r<9&&c<9)||(r<9&&c>11)||(r>11&&c<9)||(r<8&&c>12)||(r>12&&c<8);
+        if (inFinder) continue;
+        if (rnd(r*21+c)) svg += '<rect x="'+(c*cs)+'" y="'+(r*cs)+'" width="'+cs+'" height="'+cs+'" fill="#000"/>';
+      }
+      svg += '</svg>';
+      el.innerHTML = svg;
+    }
 
     /* ── Notifica ────────────────────────────────── */
     function showNotif(msg, type) {
