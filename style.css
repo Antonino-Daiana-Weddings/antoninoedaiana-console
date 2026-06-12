@@ -413,6 +413,12 @@ h1 {
   height: 180px !important;
 }
 
+.qrcode svg {
+  display: block;
+  width: 180px !important;
+  height: 180px !important;
+}
+
 .qr-warning {
   color: rgba(255, 255, 255, 0.7);
   font-size: 13px;
