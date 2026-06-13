@@ -78,7 +78,17 @@
 
                       <!-- Pagina 2: vai al bancone -->
                       <div class="ticket-page page-go-staff" id="page-go-staff">
-                        <p class="go-staff-p">Vai al bancone</p>
+                        <div class="go-staff-wrap">
+                          <p class="go-staff-p">Vai al bancone</p>
+                          <svg class="hand-underline" viewBox="0 0 200 16"
+                               preserveAspectRatio="none" aria-hidden="true">
+                            <path pathLength="100"
+                                  d="M4,9 C30,6 48,12 72,8.5 C96,5.5 118,12 142,8.5 C164,5.5 184,11 196,8.5"
+                                  fill="none" stroke="#FC2291" stroke-width="2.4"
+                                  stroke-linecap="round" stroke-linejoin="round"
+                                  vector-effect="non-scaling-stroke"></path>
+                          </svg>
+                        </div>
                         <p class="product-p" id="ticketProduct2">1x —</p>
                       </div>
 
@@ -244,6 +254,14 @@
     var pageIds = ['page-item', 'page-go-staff', 'page-confirm'];
     var transitioning = false;
 
+    /* Avvia (o riavvia) l'animazione della sottolineatura disegnata a mano */
+    function drawUnderline() {
+      var p = document.getElementById('page-go-staff');
+      p.classList.remove('draw');
+      void p.offsetWidth; /* forza il reflow per ripartire da capo */
+      p.classList.add('draw');
+    }
+
     /* Dissolvenza: la pagina corrente sfuma, poi entra la nuova */
     function showPage(idx) {
       if (transitioning) return;
@@ -258,6 +276,7 @@
           requestAnimationFrame(function() {
             nxt.classList.remove('fading');
             transitioning = false;
+            if (idx === 1) drawUnderline();
           });
         });
         currentPage = idx;
