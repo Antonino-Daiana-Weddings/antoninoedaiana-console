@@ -80,9 +80,9 @@ h1 {
 
 /* ── GLASS CARDS (blue) ──────────────────────────── */
 .main-card.card-glass {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 0;
   overflow: hidden;
