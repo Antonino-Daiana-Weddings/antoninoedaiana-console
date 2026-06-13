@@ -272,7 +272,7 @@ h1 {
   border-color: var(--gradient-color3);
 }
 
-/* Ticket pages (dissolvenza tra una pagina e l'altra) */
+/* Ticket pages: transizione con scorrimento verticale verso l'alto */
 .ticket-page {
   display: none;
   flex-direction: column;
@@ -282,15 +282,30 @@ h1 {
   width: 100%;
   gap: 8px;
   opacity: 1;
-  transition: opacity 0.15s ease;
 }
 
 .ticket-page.visible {
   display: flex;
 }
 
-.ticket-page.fading {
-  opacity: 0;
+/* La pagina entrante sale in posizione mentre compare */
+.ticket-page.enter {
+  animation: pageEnter 0.26s ease both;
+}
+
+/* La pagina uscente scorre verso l'alto mentre svanisce */
+.ticket-page.leave {
+  animation: pageLeave 0.16s ease both;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageLeave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-18px); }
 }
 
 .ticket.loading .ticket-page {

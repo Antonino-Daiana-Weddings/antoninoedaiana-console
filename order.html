@@ -260,18 +260,16 @@
       transitioning = true;
       var cur = document.getElementById(pageIds[currentPage]);
       var nxt = document.getElementById(pageIds[idx]);
-      cur.classList.add('fading');
+      cur.classList.add('leave');                 /* scorre via verso l'alto */
       setTimeout(function() {
-        cur.classList.remove('visible', 'fading');
-        nxt.classList.add('visible', 'fading');
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            nxt.classList.remove('fading');
-            transitioning = false;
-          });
-        });
+        cur.classList.remove('visible', 'leave');
+        nxt.classList.add('visible', 'enter');     /* sale in posizione */
         currentPage = idx;
-      }, 150);
+        setTimeout(function() {
+          nxt.classList.remove('enter');
+          transitioning = false;
+        }, 280);
+      }, 160);
     }
 
     var redeemed = false;
@@ -300,12 +298,8 @@
         loading = false;
         currentPage = 0;
         var page = document.getElementById('page-item');
-        page.classList.add('visible', 'fading');
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            page.classList.remove('fading');
-          });
-        });
+        page.classList.add('visible', 'enter');    /* il prodotto risale in vista */
+        setTimeout(function() { page.classList.remove('enter'); }, 280);
         document.getElementById('orderMessages').classList.remove('hidden');
       }, 700);
     }
