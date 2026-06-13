@@ -8,6 +8,7 @@
   --gradient-color2: #FDDE00;
   --gradient-color3: #FC2291;
   --color-teal: #11BF95;
+  --color-redeemed: #58D66B;
   --white: #ffffff;
   --card-radius: 16px;
   --text-dark: #1a1a1a;
@@ -29,16 +30,15 @@ body {
   inset: 0;
   z-index: 0;
   background-image: url('https://img.qromo.io/img/vue/order-background.png');
-  background-repeat: repeat;
-  background-size: 430px;
-  opacity: 0.2;
+  background-size: cover;
+  background-position: center;
 }
 
 .background-after {
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 80%);
+  background: var(--background-color-extra-light);
 }
 
 /* ── LAYOUT ─────────────────────────────────────── */
@@ -49,7 +49,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 56px 16px 60px;
+  padding: 48px 16px 60px;
 }
 
 .page-content {
@@ -57,13 +57,13 @@ main {
   max-width: 480px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 12px;
 }
 
 /* ── TYPOGRAPHY ──────────────────────────────────── */
 h1 {
   color: var(--white);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   font-style: italic;
   text-align: center;
@@ -89,13 +89,13 @@ h1 {
 }
 
 .card-header-container {
-  padding: 9px 16px;
+  padding: 14px 16px 12px;
   background: rgba(255, 255, 255, 0.4);
 }
 
 .card-header-container .title h2 {
   color: #3d3d3d;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   font-style: italic;
 }
@@ -109,7 +109,6 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
 }
 
 .order-header .bold {
@@ -130,9 +129,8 @@ h1 {
   -webkit-backdrop-filter: blur(8px);
   border: 1.5px solid var(--gradient-color1);
   border-radius: var(--card-radius);
-  padding: 12px 14px;
+  padding: 14px 16px;
   width: 100%;
-  animation: fadeUp 0.35s ease both;
 }
 
 .order-messages .message {
@@ -146,11 +144,9 @@ h1 {
 
 /* ── ORDER SUMMARY EXPLAIN ───────────────────────── */
 .order-summary-explain {
-  color: var(--white);
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .mt-10 { margin-top: 10px; }
@@ -163,7 +159,7 @@ h1 {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 .list-item {
@@ -181,7 +177,7 @@ h1 {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 170px;
+  min-height: 110px;
   position: relative;
   border-radius: 10px;
   overflow: hidden;
@@ -195,19 +191,20 @@ h1 {
   flex-shrink: 0;
 }
 
-/* Sinistra: colore in ping-pong teal ↔ giallo ↔ rosa, sempre attivo */
+/* Sinistra: arcobaleno animato in continuazione */
 .ticket-left {
   color: var(--gradient-color1);
 }
 
 .ticket-left.animated {
-  animation: ticketColor 3.5s linear infinite alternate;
+  animation: ticketColor 4s linear infinite;
 }
 
 @keyframes ticketColor {
   0%   { color: var(--gradient-color1); }
-  50%  { color: var(--gradient-color2); }
-  100% { color: var(--gradient-color3); }
+  33%  { color: var(--gradient-color2); }
+  66%  { color: var(--gradient-color3); }
+  100% { color: var(--gradient-color1); }
 }
 
 /* Destra: bianca fino al bordo, con notch scuro */
@@ -220,13 +217,13 @@ h1 {
   background: currentColor;
 }
 
-/* Il foro del notch lascia vedere lo sfondo della card dietro al ticket */
+/* Il retro scuro del notch: il foro del path lascia vedere questo colore */
 .ticket-svg-container {
   width: 25px;
   height: 68px;
   flex-shrink: 0;
   display: block;
-  background: transparent;
+  background: var(--background-color);
 }
 
 .ticket-svg-container svg {
@@ -252,27 +249,21 @@ h1 {
   cursor: pointer;
 }
 
-/* Bordo arrotondato interno: teal di default, rosa a ordine evaso */
+/* Bordo rosso/rosa arrotondato interno al ticket */
 .ticket-content-radius {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px 12px;
-  margin: 10px;
-  border: 1.5px solid var(--gradient-color1);
-  border-radius: 12px;
+  margin: 12px;
+  border: 2px solid var(--gradient-color3);
+  border-radius: 14px;
   position: relative;
   z-index: 1;
-  transition: border-color 0.3s ease;
 }
 
-.ticket.loading .ticket-content-radius,
-.ticket.redeemed .ticket-content-radius {
-  border-color: var(--gradient-color3);
-}
-
-/* Ticket pages (dissolvenza tra una pagina e l'altra) */
+/* Ticket pages */
 .ticket-page {
   display: none;
   flex-direction: column;
@@ -281,130 +272,86 @@ h1 {
   text-align: center;
   width: 100%;
   gap: 8px;
-  opacity: 1;
-  transition: opacity 0.15s ease;
 }
 
 .ticket-page.visible {
   display: flex;
 }
 
-.ticket-page.fading {
-  opacity: 0;
-}
-
-.ticket.loading .ticket-page {
-  display: none;
-}
-
 .ticket-page.page-item > p {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
-  color: #444444;
-}
-
-.ticket-page.page-go-staff {
-  gap: 45px;
+  color: var(--text-dark);
 }
 
 .go-staff-p {
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--gradient-color3);
   text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-underline-offset: 6px;
   cursor: pointer;
 }
 
 .product-p {
   font-size: 18px;
   font-weight: 700;
-  color: #555555;
+  color: var(--text-dark);
 }
 
-.ticket-page.page-confirm {
-  gap: 14px;
+/* Checkmark "scritto" sotto Vai al bancone */
+.staff-check {
+  width: 34px;
+  height: 34px;
+  margin-top: 2px;
+}
+
+.staff-check svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.staff-check-path {
+  stroke: var(--gradient-color1);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawCheck 1.6s ease-in-out infinite;
+}
+
+@keyframes drawCheck {
+  0%        { stroke-dashoffset: 40; }
+  45%, 70%  { stroke-dashoffset: 0; }
+  100%      { stroke-dashoffset: 40; }
 }
 
 .ticket-page.page-confirm > p {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--gradient-color3);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
 .button-container {
   display: flex;
-  gap: 24px;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-/* X decorativa (corre lungo il bordo interno): compare solo a ordine
-   evaso, insieme alla scritta del prodotto. Nascosta durante il loader. */
+/* Decorative X overlay (corre lungo il bordo rosa) */
 .x-container {
   position: absolute;
-  inset: 32px;
+  inset: 12px;
   pointer-events: none;
   z-index: 2;
-  display: none;
-  opacity: 0;
-  transition: opacity 0.35s ease;
 }
 
-.ticket.redeemed .x-container {
-  display: block;
-  opacity: 1;
-}
-
-/* ── LOADER QROMO (3 quadrati QR in orbita) ──────── */
-.ticket-loader {
-  position: absolute;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-}
-
-.ticket.loading .ticket-loader {
-  display: flex;
-}
-
-.loader-box {
-  position: relative;
-  width: 46px;
-  height: 46px;
-}
-
-.loader-square {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  border: 4.5px solid var(--background-color);
-  border-radius: 6px;
-  animation: loaderOrbit 1.4s ease infinite;
-}
-
-.loader-square::after {
-  content: '';
-  position: absolute;
-  inset: 2.5px;
-  background: var(--background-color);
-  border-radius: 2.5px;
-}
-
-.loader-square:nth-child(2) { animation-delay: -0.35s; }
-.loader-square:nth-child(3) { animation-delay: -0.7s; }
-
-@keyframes loaderOrbit {
-  0%, 4%   { transform: translate(0, 0); }
-  25%, 29% { transform: translate(26px, 0); }
-  50%, 54% { transform: translate(26px, 26px); }
-  75%, 79% { transform: translate(0, 26px); }
-  100%     { transform: translate(0, 0); }
+/* Redeemed: stop animazione, lato sinistro verde */
+.ticket.redeemed .ticket-left {
+  animation: none;
+  color: var(--color-redeemed);
 }
 
 /* ── BASE BUTTONS ────────────────────────────────── */
@@ -440,7 +387,7 @@ h1 {
   background: transparent;
   border: 1.5px solid var(--gradient-color1);
   color: var(--gradient-color1);
-  padding: 12px 26px;
+  width: 100%;
 }
 
 /* Plain outline (white cards): transparent with primary border */
@@ -453,33 +400,23 @@ h1 {
 }
 
 .base-button.button-negative {
-  background: var(--background-color);
-  color: var(--gradient-color1);
-  width: 94px;
-  height: 76px;
-  padding: 0;
-  border-radius: 14px;
-  font-size: 20px;
-  font-weight: 600;
+  background: #ef4444;
+  color: white;
+  min-width: 72px;
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
 .base-button.button-positive.outline {
-  background: var(--white);
-  border: 1.5px solid var(--gradient-color3);
-  color: var(--gradient-color3);
-  width: 94px;
-  height: 76px;
-  padding: 0;
-  border-radius: 14px;
-  font-size: 20px;
-  font-weight: 600;
+  background: transparent;
+  border: 1.5px solid #22c55e;
+  color: #22c55e;
+  min-width: 72px;
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
-.order-button {
-  display: flex;
-  width: fit-content;
-  margin: 48px auto 28px;
-}
+.order-button { width: 100%; }
 
 /* ── QR SECTION ──────────────────────────────────── */
 .qr-container {
@@ -488,7 +425,6 @@ h1 {
   align-items: center;
   gap: 0;
   width: 100%;
-  text-align: center;
 }
 
 .qrcode {
@@ -675,5 +611,5 @@ h1 {
 
 @media (min-width: 520px) {
   main { padding: 60px 24px 72px; }
-  h1 { font-size: 26px; }
+  h1 { font-size: 30px; }
 }

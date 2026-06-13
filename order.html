@@ -78,8 +78,14 @@
 
                       <!-- Pagina 2: vai al bancone -->
                       <div class="ticket-page page-go-staff" id="page-go-staff">
-                        <p class="go-staff-p">Vai al bancone</p>
+                        <p class="go-staff-p" onclick="event.stopPropagation(); gotoConfirm()">Vai al bancone</p>
                         <p class="product-p" id="ticketProduct2">1x —</p>
+                        <div class="staff-check" aria-hidden="true">
+                          <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+                            <path class="staff-check-path" fill="none"
+                                  d="M14 27 L22 35 L40 16"></path>
+                          </svg>
+                        </div>
                       </div>
 
                       <!-- Pagina 3: conferma ritiro -->
@@ -97,17 +103,8 @@
 
                     </div>
 
-                    <!-- Loader Qromo (visibile durante l'evasione) -->
-                    <div class="ticket-loader">
-                      <div class="loader-box">
-                        <div class="loader-square"></div>
-                        <div class="loader-square"></div>
-                        <div class="loader-square"></div>
-                      </div>
-                    </div>
-
                     <!-- X decorativo (visibile dopo evaso) -->
-                    <div class="x-container" id="xContainer">
+                    <div class="x-container" id="xContainer" style="display:none;">
                       <svg preserveAspectRatio="none" viewBox="0 0 200 100"
                            xmlns="http://www.w3.org/2000/svg" xml:space="preserve"
                            style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;width:100%;height:100%;">
@@ -121,7 +118,7 @@
                     </div>
                   </div>
 
-                  <!-- Lato destro bianco con notch (scuro) -->
+                  <!-- Lato destro con notch (usa colore background per illusione ritaglio) -->
                   <div class="ticket-side ticket-right">
                     <div class="ticket-piece piece-right-top"></div>
                     <div class="ticket-svg-container">
@@ -140,7 +137,7 @@
           </div><!-- /list-container -->
 
           <!-- Torna al menù — dentro la card principale -->
-          <div class="base-button inverted outline order-button"
+          <div class="base-button inverted outline order-button mt-20 mb-20"
                onclick="window.location.href='index.html'">
             <div class="button-inner"><div class="btn-text"><p>Torna al menù</p></div></div>
           </div>
@@ -200,18 +197,18 @@
   <script>
     /* ── Parametri URL ───────────────────────────── */
     var p        = new URLSearchParams(window.location.search);
-    var name     = p.get('name')     || 'Alessio';
-    var product  = p.get('product')  || 'GIN tonic';
+    var name     = p.get('name')     || 'Cliente';
+    var product  = p.get('product')  || 'Prodotto';
     var qty      = p.get('qty')      || '1';
     var price    = p.get('price')    || '0.00';
-    var orderNum = p.get('orderNum') || '1810';
+    var orderNum = p.get('orderNum') || String(Math.floor(Math.random()*900)+100);
 
     document.getElementById('customerName').textContent   = name;
     document.getElementById('orderNumber').textContent    = '#' + orderNum;
     document.getElementById('ticketProduct').textContent  = qty + 'x ' + product;
     document.getElementById('ticketProduct2').textContent = qty + 'x ' + product;
 
-    document.getElementById('orderTime').textContent = '1 min fa';
+    document.getElementById('orderTime').textContent = '12 min fa';
 
     /* ── QR Code ─────────────────────────────────── */
     var qrText = 'BunkerF | #' + orderNum + ' | ' + name + ' | ' + qty + 'x ' + product;
@@ -242,62 +239,30 @@
     /* ── Ticket state machine ────────────────────── */
     var currentPage = 0;
     var pageIds = ['page-item', 'page-go-staff', 'page-confirm'];
-    var transitioning = false;
 
-    /* Dissolvenza: la pagina corrente sfuma, poi entra la nuova */
     function showPage(idx) {
-      if (transitioning) return;
-      transitioning = true;
-      var cur = document.getElementById(pageIds[currentPage]);
-      var nxt = document.getElementById(pageIds[idx]);
-      cur.classList.add('fading');
-      setTimeout(function() {
-        cur.classList.remove('visible', 'fading');
-        nxt.classList.add('visible', 'fading');
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            nxt.classList.remove('fading');
-            transitioning = false;
-          });
-        });
-        currentPage = idx;
-      }, 150);
+      pageIds.forEach(function(id, i) {
+        document.getElementById(id).classList.toggle('visible', i === idx);
+      });
+      currentPage = idx;
     }
 
     var redeemed = false;
-    var loading = false;
 
     function advanceTicket() {
-      if (redeemed || loading) return;
-      if (currentPage === 0) showPage(1);
-      else if (currentPage === 1) showPage(2);
+      if (!redeemed && currentPage === 0) showPage(1);
     }
 
     function gotoConfirm() {
-      if (!redeemed && !loading) showPage(2);
+      if (!redeemed) showPage(2);
     }
 
     function evadi() {
-      if (loading) return;
-      loading = true;
-      var ticket = document.getElementById('ticket');
-      document.getElementById(pageIds[currentPage]).classList.remove('visible');
-      ticket.classList.add('loading');
-      setTimeout(function() {
-        ticket.classList.remove('loading');
-        ticket.classList.add('redeemed');
-        redeemed = true;
-        loading = false;
-        currentPage = 0;
-        var page = document.getElementById('page-item');
-        page.classList.add('visible', 'fading');
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            page.classList.remove('fading');
-          });
-        });
-        document.getElementById('orderMessages').classList.remove('hidden');
-      }, 700);
+      redeemed = true;
+      document.getElementById('ticket').classList.add('redeemed');
+      document.getElementById('xContainer').style.display = 'block';
+      showPage(0);
+      document.getElementById('orderMessages').classList.remove('hidden');
     }
 
     function noEvadi() {
