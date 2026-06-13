@@ -336,12 +336,15 @@ h1 {
   stroke-dashoffset: 100;
 }
 
-.page-go-staff.draw .hand-underline path {
-  animation: drawUnderline 0.55s ease-out forwards;
+/* Si traccia da sinistra a destra, resta piena un attimo, poi ricomincia in loop */
+.page-go-staff.visible .hand-underline path {
+  animation: drawUnderline 2.4s ease-out infinite;
 }
 
 @keyframes drawUnderline {
-  to { stroke-dashoffset: 0; }
+  0%   { stroke-dashoffset: 100; }
+  35%  { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
 }
 
 .product-p {
