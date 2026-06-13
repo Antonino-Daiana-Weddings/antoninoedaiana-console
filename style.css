@@ -479,12 +479,17 @@ h1 {
   justify-content: center;
 }
 
-/* Inverted + outline: transparent with teal border */
+/* Inverted + outline: pillola trasparente con alone teal, testo più grande
+   e leggermente più sottile (effetto "sfondato" come nell'originale) */
 .base-button.inverted.outline {
   background: transparent;
   border: 1.5px solid var(--gradient-color1);
   color: var(--gradient-color1);
-  padding: 12px 26px;
+  padding: 6px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  box-shadow: 0 0 10px rgba(44, 236, 190, 0.3);
+  text-shadow: 0 0 6px rgba(44, 236, 190, 0.45);
 }
 
 /* Plain outline (white cards): transparent with primary border */
