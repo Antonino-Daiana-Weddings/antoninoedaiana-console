@@ -288,24 +288,24 @@ h1 {
   display: flex;
 }
 
-/* La pagina entrante sale in posizione mentre compare */
+/* La pagina entrante scende in posizione mentre compare */
 .ticket-page.enter {
   animation: pageEnter 0.26s ease both;
 }
 
-/* La pagina uscente scorre verso l'alto mentre svanisce */
+/* La pagina uscente scorre verso il basso mentre svanisce */
 .ticket-page.leave {
   animation: pageLeave 0.16s ease both;
 }
 
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(-18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pageLeave {
   from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 0; transform: translateY(18px); }
 }
 
 .ticket.loading .ticket-page {
