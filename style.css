@@ -298,6 +298,35 @@ h1 {
   color: var(--text-dark);
 }
 
+/* Checkmark "scritto" sotto Vai al bancone */
+.staff-check {
+  width: 34px;
+  height: 34px;
+  margin-top: 2px;
+}
+
+.staff-check svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.staff-check-path {
+  stroke: var(--gradient-color1);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawCheck 1.6s ease-in-out infinite;
+}
+
+@keyframes drawCheck {
+  0%        { stroke-dashoffset: 40; }
+  45%, 70%  { stroke-dashoffset: 0; }
+  100%      { stroke-dashoffset: 40; }
+}
+
 .ticket-page.page-confirm > p {
   font-size: 14px;
   font-weight: 600;
